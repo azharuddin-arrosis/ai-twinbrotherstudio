@@ -4,6 +4,66 @@ import PublicLayout from '../Components/Layout/PublicLayout';
 import ArticleCard from '../Components/UI/ArticleCard';
 import { ArrowRight } from 'lucide-react';
 
+function CategorySection({ category, articles, idx }) {
+    const variant = idx % 3;
+
+    const header = (
+        <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: category.color }} />
+                <h2 className="font-semibold text-gray-900">{category.name}</h2>
+                <span className="text-xs text-gray-400">{category.articles_count} articles</span>
+            </div>
+            <Link href={`/category/${category.slug}`} className="text-sm text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                See all <ArrowRight size={13} />
+            </Link>
+        </div>
+    );
+
+    /* Variant 0 — 4-column grid */
+    if (variant === 0) {
+        return (
+            <section className="mb-12">
+                {header}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+                    {articles.map(article => (
+                        <ArticleCard key={article.id} article={article} />
+                    ))}
+                </div>
+            </section>
+        );
+    }
+
+    /* Variant 1 — large featured left + compact list right */
+    if (variant === 1) {
+        return (
+            <section className="mb-12">
+                {header}
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+                    <ArticleCard article={articles[0]} size="default" />
+                    <div className="space-y-5 border-t lg:border-t-0 lg:border-l border-gray-100 pt-5 lg:pt-0 lg:pl-6">
+                        {articles.slice(1, 4).map(article => (
+                            <ArticleCard key={article.id} article={article} size="compact" />
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
+    /* Variant 2 — 2-column wide, 2 rows, excerpts visible */
+    return (
+        <section className="mb-12">
+            {header}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {articles.slice(0, 4).map(article => (
+                    <ArticleCard key={article.id} article={article} />
+                ))}
+            </div>
+        </section>
+    );
+}
+
 export default function Home({ featured, categories, latestByCategory, featuredPortfolio = [] }) {
     const hero = featured[0];
     const heroSide = featured.slice(1, 5);
@@ -64,29 +124,17 @@ export default function Home({ featured, categories, latestByCategory, featuredP
 
                 <div className="border-t border-gray-100 mb-10" />
 
-                {/* Category sections */}
-                {categories.map((category) => {
+                {/* Category sections — 3 rotating layouts */}
+                {categories.map((category, idx) => {
                     const articles = latestByCategory[category.slug];
                     if (!articles || articles.length === 0) return null;
-
                     return (
-                        <section key={category.id} className="mb-12">
-                            <div className="flex items-center justify-between mb-5">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: category.color }} />
-                                    <h2 className="font-semibold text-gray-900">{category.name}</h2>
-                                    <span className="text-xs text-gray-400">{category.articles_count} articles</span>
-                                </div>
-                                <Link href={`/category/${category.slug}`} className="text-sm text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
-                                    See all <ArrowRight size={13} />
-                                </Link>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                                {articles.map((article) => (
-                                    <ArticleCard key={article.id} article={article} />
-                                ))}
-                            </div>
-                        </section>
+                        <CategorySection
+                            key={category.id}
+                            category={category}
+                            articles={articles}
+                            idx={idx}
+                        />
                     );
                 })}
 
