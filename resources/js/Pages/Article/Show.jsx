@@ -2,7 +2,7 @@ import { Link, useForm, usePage } from '@inertiajs/react';
 import PageMeta from '../../Components/UI/PageMeta';
 import PublicLayout from '../../Components/Layout/PublicLayout';
 import ArticleCard from '../../Components/UI/ArticleCard';
-import { Clock, ExternalLink, Share2, Copy, Check, Eye, Heart, Send } from 'lucide-react';
+import { Clock, ExternalLink, Share2, Copy, Check, Eye, Heart, Send, Moon, Sun } from 'lucide-react';
 import { useState } from 'react';
 
 function formatRelativeTime(dateString) {
@@ -58,20 +58,20 @@ function CommentForm({ categorySlug, articleSlug }) {
                 <div>
                     <input type="text" placeholder="Your name *" value={data.name}
                         onChange={e => setData('name', e.target.value)}
-                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 ${errors.name ? 'border-red-300' : 'border-gray-200'}`} />
+                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-slate-400 dark:focus:ring-indigo-600 ${errors.name ? 'border-red-300' : 'border-gray-200'}`} />
                     {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
                 </div>
                 <div>
                     <input type="email" placeholder="Your email * (not shown)" value={data.email}
                         onChange={e => setData('email', e.target.value)}
-                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 ${errors.email ? 'border-red-300' : 'border-gray-200'}`} />
+                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-slate-400 dark:focus:ring-indigo-600 ${errors.email ? 'border-red-300' : 'border-gray-200'}`} />
                     {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
                 </div>
             </div>
             <div>
                 <textarea placeholder="Write your comment... *" value={data.body}
                     onChange={e => setData('body', e.target.value)} rows={4}
-                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-none ${errors.body ? 'border-red-300' : 'border-gray-200'}`} />
+                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-none dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-slate-400 dark:focus:ring-indigo-600 ${errors.body ? 'border-red-300' : 'border-gray-200'}`} />
                 {errors.body && <p className="text-xs text-red-500 mt-1">{errors.body}</p>}
             </div>
             <button type="submit" disabled={processing}
@@ -85,16 +85,16 @@ function CommentForm({ categorySlug, articleSlug }) {
 
 function CommentItem({ comment }) {
     return (
-        <div className="py-4 border-b border-gray-50 last:border-0">
+        <div className="py-4 border-b border-gray-50 dark:border-slate-700 last:border-0">
             <div className="flex items-center gap-2 mb-1.5">
-                <span className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-600 text-xs font-semibold flex items-center justify-center flex-shrink-0">
+                <span className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-600 text-xs font-semibold flex items-center justify-center flex-shrink-0 dark:bg-indigo-900 dark:text-indigo-300">
                     {comment.name.charAt(0).toUpperCase()}
                 </span>
-                <span className="text-sm font-medium text-gray-900">{comment.name}</span>
-                <span className="text-xs text-gray-400">·</span>
-                <span className="text-xs text-gray-400">{formatRelativeTime(comment.created_at)}</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">{comment.name}</span>
+                <span className="text-xs text-gray-400 dark:text-slate-500">·</span>
+                <span className="text-xs text-gray-400 dark:text-slate-500">{formatRelativeTime(comment.created_at)}</span>
             </div>
-            <p className="text-sm text-gray-700 leading-relaxed ml-9">{comment.body}</p>
+            <p className="text-sm text-gray-700 leading-relaxed ml-9 dark:text-slate-300">{comment.body}</p>
 
             {/* Replies */}
             {comment.replies?.length > 0 && (
@@ -161,7 +161,7 @@ function LikeButton({ article, categorySlug }) {
             <button
                 onClick={handleLike}
                 disabled={liked || loading}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border dark:border-slate-700 ${
                     liked
                         ? 'bg-red-50 border-red-200 text-red-500 cursor-default'
                         : 'bg-white border-gray-200 text-gray-500 hover:border-red-200 hover:text-red-500 hover:bg-red-50'
@@ -181,6 +181,15 @@ function LikeButton({ article, categorySlug }) {
 
 export default function ArticleShow({ article, related }) {
     const [copied, setCopied] = useState(false);
+    const [isDark, setIsDark] = useState(() => {
+        try { return localStorage.getItem('article_dark_mode') === '1'; } catch { return false; }
+    });
+
+    const toggleDark = () => {
+        const next = !isDark;
+        setIsDark(next);
+        try { localStorage.setItem('article_dark_mode', next ? '1' : ''); } catch {}
+    };
 
     const handleCopy = () => {
         navigator.clipboard.writeText(window.location.href);
@@ -199,169 +208,182 @@ export default function ArticleShow({ article, related }) {
                 publishedAt={article.published_at}
             />
 
-            <div className="max-w-6xl mx-auto px-4 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10">
+            <div className={`px-4 py-8 transition-colors ${isDark ? 'dark bg-slate-900 min-h-screen' : ''}`}>
+                <div className="max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10">
 
-                    {/* Article */}
-                    <article>
-                        {/* Breadcrumb */}
-                        <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-5">
-                            <Link href="/" className="hover:text-gray-700">Home</Link>
-                            <span>/</span>
-                            <Link href={`/category/${article.category.slug}`} className="hover:text-gray-700">
-                                {article.category.name}
-                            </Link>
-                        </div>
+                        {/* Article */}
+                        <article>
+                            {/* Breadcrumb */}
+                            <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-slate-500 mb-5">
+                                <Link href="/" className="hover:text-gray-700">Home</Link>
+                                <span>/</span>
+                                <Link href={`/category/${article.category.slug}`} className="hover:text-gray-700">
+                                    {article.category.name}
+                                </Link>
+                            </div>
 
-                        {/* Header */}
-                        <header className="mb-6">
-                            <Link
-                                href={`/category/${article.category.slug}`}
-                                className="inline-block text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-2"
-                            >
-                                {article.category.name}
-                            </Link>
-                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
-                                {article.title}
-                            </h1>
-                            {article.excerpt && (
-                                <p className="mt-3 text-base text-gray-600 leading-relaxed">
-                                    {article.excerpt}
+                            {/* Header */}
+                            <header className="mb-6">
+                                <Link
+                                    href={`/category/${article.category.slug}`}
+                                    className="inline-block text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-2"
+                                >
+                                    {article.category.name}
+                                </Link>
+                                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight dark:text-white">
+                                    {article.title}
+                                </h1>
+                                {article.excerpt && (
+                                    <p className="mt-3 text-base text-gray-600 leading-relaxed dark:text-slate-400">
+                                        {article.excerpt}
+                                    </p>
+                                )}
+
+                                <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-400 dark:text-slate-500">
+                                    <span className="flex items-center gap-1.5">
+                                        <Clock size={13} />
+                                        {article.reading_time} min read
+                                    </span>
+                                    {article.published_at && (
+                                        <span>{formatDate(article.published_at)}</span>
+                                    )}
+                                    {article.view_count > 0 && (
+                                        <span className="flex items-center gap-1.5">
+                                            <Eye size={13} />
+                                            {formatCount(article.view_count)}
+                                        </span>
+                                    )}
+                                    {article.source_name && (
+                                        <span className="flex items-center gap-1">
+                                            Via {article.source_name}
+                                            {article.source_url && (
+                                                <a href={article.source_url} target="_blank" rel="noopener noreferrer">
+                                                    <ExternalLink size={11} />
+                                                </a>
+                                            )}
+                                        </span>
+                                    )}
+                                    <button
+                                        onClick={toggleDark}
+                                        className={`ml-auto p-1.5 rounded-lg transition-colors ${
+                                            isDark
+                                                ? 'text-yellow-400 hover:bg-slate-800'
+                                                : 'text-gray-400 hover:bg-gray-100'
+                                        }`}
+                                        title={isDark ? 'Light mode' : 'Dark mode'}
+                                    >
+                                        {isDark ? <Sun size={14} /> : <Moon size={14} />}
+                                    </button>
+                                </div>
+                            </header>
+
+                            {/* Featured Image */}
+                            {article.featured_image && (
+                                <div className="mb-6 rounded-xl overflow-hidden aspect-[16/9] bg-gray-100">
+                                    <img
+                                        src={article.featured_image}
+                                        alt={article.title}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                            )}
+
+                            {/* Content */}
+                            <div
+                                className="prose prose-gray prose-sm sm:prose max-w-none prose-headings:font-semibold prose-a:text-indigo-600 prose-code:text-indigo-700 prose-code:bg-indigo-50 prose-code:px-1 prose-code:rounded dark:prose-invert"
+                                dangerouslySetInnerHTML={{ __html: article.content }}
+                            />
+
+                            {/* Tags */}
+                            {article.tags?.length > 0 && (
+                                <div className="mt-8 pt-6 border-t border-gray-100 flex flex-wrap gap-2">
+                                    {article.tags.map((tag) => (
+                                        <Link key={tag.id} href={`/tag/${tag.slug}`}
+                                            className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full hover:bg-indigo-50 hover:text-indigo-600 transition-colors dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-indigo-900 dark:hover:text-indigo-300">
+                                            #{tag.name}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Like */}
+                            <LikeButton
+                                article={article}
+                                categorySlug={article.category.slug}
+                            />
+
+                            {/* Share */}
+                            <div className="mt-6 flex flex-wrap items-center gap-3">
+                                <span className="text-sm text-gray-500 flex items-center gap-1.5 dark:text-slate-400">
+                                    <Share2 size={14} /> Share
+                                </span>
+                                <a
+                                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(window.location.href)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs bg-black text-white px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-colors"
+                                >
+                                    X / Twitter
+                                </a>
+                                <button
+                                    onClick={handleCopy}
+                                    className="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-1"
+                                >
+                                    {copied ? <><Check size={12} /> Copied!</> : <><Copy size={12} /> Copy link</>}
+                                </button>
+                            </div>
+
+                            {/* AI Disclosure */}
+                            {article.source_type === 'ai_generated' && (
+                                <p className="mt-6 text-xs text-gray-400 border-t border-gray-100 pt-4 dark:text-slate-500 dark:border-slate-800">
+                                    This article was written with AI assistance.
+                                    {article.source_url && (
+                                        <> Original source: <a href={article.source_url} target="_blank" rel="noopener noreferrer" className="underline">{article.source_name || article.source_url}</a>.</>
+                                    )}
                                 </p>
                             )}
 
-                            <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-400">
-                                <span className="flex items-center gap-1.5">
-                                    <Clock size={13} />
-                                    {article.reading_time} min read
-                                </span>
-                                {article.published_at && (
-                                    <span>{formatDate(article.published_at)}</span>
+                            {/* Comments */}
+                            <section className="mt-10 pt-8 border-t border-gray-100">
+                                <h2 className="text-base font-semibold text-gray-900 mb-6 dark:text-white">
+                                    {article.comments?.length > 0
+                                        ? `${article.comments.length} Comment${article.comments.length > 1 ? 's' : ''}`
+                                        : 'Comments'
+                                    }
+                                </h2>
+
+                                {article.comments?.length > 0 && (
+                                    <div className="mb-8 bg-white border border-gray-100 rounded-xl divide-y divide-gray-50 px-4 dark:bg-slate-800 dark:border-slate-700">
+                                        {article.comments.map(comment => (
+                                            <CommentItem key={comment.id} comment={comment} />
+                                        ))}
+                                    </div>
                                 )}
-                                {article.view_count > 0 && (
-                                    <span className="flex items-center gap-1.5">
-                                        <Eye size={13} />
-                                        {formatCount(article.view_count)}
-                                    </span>
-                                )}
-                                {article.source_name && (
-                                    <span className="flex items-center gap-1">
-                                        Via {article.source_name}
-                                        {article.source_url && (
-                                            <a href={article.source_url} target="_blank" rel="noopener noreferrer">
-                                                <ExternalLink size={11} />
-                                            </a>
-                                        )}
-                                    </span>
-                                )}
-                            </div>
-                        </header>
 
-                        {/* Featured Image */}
-                        {article.featured_image && (
-                            <div className="mb-6 rounded-xl overflow-hidden aspect-[16/9] bg-gray-100">
-                                <img
-                                    src={article.featured_image}
-                                    alt={article.title}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                        )}
+                                <div className="bg-white border border-gray-100 rounded-xl p-5 dark:bg-slate-800 dark:border-slate-700">
+                                    <h3 className="text-sm font-semibold text-gray-700 mb-4 dark:text-slate-300">Leave a comment</h3>
+                                    <CommentForm categorySlug={article.category.slug} articleSlug={article.slug} />
+                                </div>
+                            </section>
+                        </article>
 
-                        {/* Content */}
-                        <div
-                            className="prose prose-gray prose-sm sm:prose max-w-none prose-headings:font-semibold prose-a:text-indigo-600 prose-code:text-indigo-700 prose-code:bg-indigo-50 prose-code:px-1 prose-code:rounded"
-                            dangerouslySetInnerHTML={{ __html: article.content }}
-                        />
-
-                        {/* Tags */}
-                        {article.tags?.length > 0 && (
-                            <div className="mt-8 pt-6 border-t border-gray-100 flex flex-wrap gap-2">
-                                {article.tags.map((tag) => (
-                                    <Link key={tag.id} href={`/tag/${tag.slug}`}
-                                        className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
-                                        #{tag.name}
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-
-                        {/* Like */}
-                        <LikeButton
-                            article={article}
-                            categorySlug={article.category.slug}
-                        />
-
-                        {/* Share */}
-                        <div className="mt-6 flex flex-wrap items-center gap-3">
-                            <span className="text-sm text-gray-500 flex items-center gap-1.5">
-                                <Share2 size={14} /> Share
-                            </span>
-                            <a
-                                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(window.location.href)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs bg-black text-white px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-colors"
-                            >
-                                X / Twitter
-                            </a>
-                            <button
-                                onClick={handleCopy}
-                                className="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-1"
-                            >
-                                {copied ? <><Check size={12} /> Copied!</> : <><Copy size={12} /> Copy link</>}
-                            </button>
-                        </div>
-
-                        {/* AI Disclosure */}
-                        {article.source_type === 'ai_generated' && (
-                            <p className="mt-6 text-xs text-gray-400 border-t border-gray-100 pt-4">
-                                This article was written with AI assistance.
-                                {article.source_url && (
-                                    <> Original source: <a href={article.source_url} target="_blank" rel="noopener noreferrer" className="underline">{article.source_name || article.source_url}</a>.</>
-                                )}
-                            </p>
-                        )}
-
-                        {/* Comments */}
-                        <section className="mt-10 pt-8 border-t border-gray-100">
-                            <h2 className="text-base font-semibold text-gray-900 mb-6">
-                                {article.comments?.length > 0
-                                    ? `${article.comments.length} Comment${article.comments.length > 1 ? 's' : ''}`
-                                    : 'Comments'
-                                }
-                            </h2>
-
-                            {article.comments?.length > 0 && (
-                                <div className="mb-8 bg-white border border-gray-100 rounded-xl divide-y divide-gray-50 px-4">
-                                    {article.comments.map(comment => (
-                                        <CommentItem key={comment.id} comment={comment} />
-                                    ))}
+                        {/* Sidebar */}
+                        <aside className="hidden lg:block">
+                            {related.length > 0 && (
+                                <div className="sticky top-20">
+                                    <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 dark:text-slate-500">
+                                        Related Articles
+                                    </h3>
+                                    <div className="space-y-5">
+                                        {related.map((article) => (
+                                            <ArticleCard key={article.id} article={article} size="compact" />
+                                        ))}
+                                    </div>
                                 </div>
                             )}
-
-                            <div className="bg-white border border-gray-100 rounded-xl p-5">
-                                <h3 className="text-sm font-semibold text-gray-700 mb-4">Leave a comment</h3>
-                                <CommentForm categorySlug={article.category.slug} articleSlug={article.slug} />
-                            </div>
-                        </section>
-                    </article>
-
-                    {/* Sidebar */}
-                    <aside className="hidden lg:block">
-                        {related.length > 0 && (
-                            <div className="sticky top-20">
-                                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-                                    Related Articles
-                                </h3>
-                                <div className="space-y-5">
-                                    {related.map((article) => (
-                                        <ArticleCard key={article.id} article={article} size="compact" />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </aside>
+                        </aside>
+                    </div>
                 </div>
             </div>
         </PublicLayout>

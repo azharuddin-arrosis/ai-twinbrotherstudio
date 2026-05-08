@@ -57,6 +57,27 @@ export default function ArticlesIndex({ articles, categories, filters }) {
             },
         },
         {
+            accessorKey: 'humanity_score',
+            header: 'Humanity',
+            enableSorting: true,
+            cell: ({ getValue }) => {
+                const score = getValue();
+                if (score === null || score === undefined) {
+                    return <span className="text-xs text-gray-300">—</span>;
+                }
+                const color = score >= 80
+                    ? 'bg-green-50 text-green-700'
+                    : score >= 50
+                    ? 'bg-amber-50 text-amber-700'
+                    : 'bg-red-50 text-red-500';
+                return (
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${color}`}>
+                        {score}%
+                    </span>
+                );
+            },
+        },
+        {
             accessorKey: 'published_at',
             header: 'Date',
             enableSorting: true,

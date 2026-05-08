@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Services\AiContentService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -130,5 +132,17 @@ class ArticleController extends Controller
     {
         $article->update(['status' => 'rejected']);
         return back()->with('success', 'Article rejected.');
+    }
+
+    public function checkHumanity(Article $article): JsonResponse
+    {
+        $service = new AiContentService();
+        $result = $service->checkHumanity($article->content);
+
+        if (isset($result['score'])) {
+            $article->update(['humanity_score' => $result['score']]);
+        }
+
+        return response()->json($result);
     }
 }

@@ -7,7 +7,7 @@ function SubscribeForm() {
     const { data, setData, post, processing, errors, reset } = useForm({ email: '', website: '' });
 
     if (flash.success && flash.success.includes('subscribed')) {
-        return <p className="text-sm text-green-600">{flash.success}</p>;
+        return <p className="text-sm text-green-400">{flash.success}</p>;
     }
 
     return (
@@ -18,9 +18,9 @@ function SubscribeForm() {
                 style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
             <input type="email" value={data.email} onChange={e => setData('email', e.target.value)}
                 placeholder="your@email.com" required
-                className="flex-1 min-w-0 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300" />
+                className="flex-1 min-w-0 px-3 py-1.5 text-sm bg-slate-800 border border-slate-700 text-white placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             <button type="submit" disabled={processing}
-                className="px-3 py-1.5 text-sm bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors whitespace-nowrap">
+                className="px-3 py-1.5 text-sm bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-500 disabled:opacity-50 transition-colors whitespace-nowrap">
                 {processing ? '...' : 'Subscribe'}
             </button>
         </form>
@@ -48,7 +48,7 @@ export default function PublicLayout({ children, title, description }) {
         <div className="min-h-screen flex flex-col bg-white">
             {/* Header */}
             <header className="border-b border-gray-100 sticky top-0 z-40 bg-white/95 backdrop-blur-sm">
-                <div className="max-w-6xl mx-auto px-4">
+                <div className="px-4 sm:px-6 lg:px-12">
                     <div className="flex items-center justify-between h-14">
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-1.5 font-semibold text-gray-900 text-lg">
@@ -141,31 +141,32 @@ export default function PublicLayout({ children, title, description }) {
             </main>
 
             {/* Footer */}
-            <footer className="border-t border-gray-100 mt-16">
-                <div className="max-w-6xl mx-auto px-4 py-8">
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+            <footer className="bg-slate-900">
+                <div className="px-4 sm:px-6 lg:px-12 py-8">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-400">
                         <div className="flex items-center gap-1.5">
-                            <Zap size={14} className="text-indigo-500" />
-                            <span className="font-medium text-gray-700">Twin Brother Studio</span>
+                            <Zap size={14} className="text-indigo-400" />
+                            <span className="font-medium text-white">Twin Brother Studio</span>
                             <span className="hidden sm:inline">— Build. Educate. Grow.</span>
                         </div>
                         <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
                             {navLinks.map((link) => (
-                                <Link key={link.href} href={link.href} className="hover:text-gray-900 transition-colors">
+                                <Link key={link.href} href={link.href} className="text-gray-400 hover:text-white transition-colors">
                                     {link.label}
                                 </Link>
                             ))}
-                            <Link href="/portfolio" className="hover:text-gray-900 transition-colors">Portfolio</Link>
-                            <Link href="/hire-us" className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors">Hire Us</Link>
+                            <Link href="/portfolio" className="text-gray-400 hover:text-white transition-colors">Portfolio</Link>
+                            <Link href="/hire-us" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">Hire Us</Link>
                         </div>
                     </div>
+
                     {/* Newsletter subscribe */}
-                    <div className="border-t border-gray-100 pt-6 mb-6">
-                        <p className="text-sm font-medium text-gray-700 mb-3">Get AI tutorials in your inbox</p>
+                    <div className="border-t border-slate-800 pt-6 mt-6 mb-6">
+                        <p className="text-sm font-medium text-gray-400 mb-3">Get AI tutorials in your inbox</p>
                         <SubscribeForm />
                     </div>
 
-                    <p className="text-center text-xs text-gray-400 mt-6">
+                    <p className="text-center text-xs text-gray-500">
                         © {new Date().getFullYear()} Twin Brother Studio. Content assisted by AI.
                     </p>
                 </div>

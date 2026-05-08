@@ -16,7 +16,7 @@ class AiContentService
     {
         $this->apiKey = config('services.openai.key', '');
         $this->model = config('services.openai.model', 'gpt-4o-mini');
-        $this->baseUrl = 'https://api.openai.com/v1';
+        $this->baseUrl = config('services.openai.base_url', 'https://api.openai.com/v1');
     }
 
     public function generateFromRssItem(array $rssItem): ?array
@@ -63,6 +63,64 @@ class AiContentService
         } catch (\Exception $e) {
             Log::error('AiContentService error: ' . $e->getMessage());
             return null;
+        }
+    }
+
+    public function checkHumanity(string $content): array
+    {
+        if (empty($this->apiKey)) {
+            return ['error' => 'API key not configured.'];
+        }
+
+        $text = mb_substr(strip_tags($content), 0, 3000);
+
+        $prompt = <<<PROMPT
+Analyze the following article text and evaluate how "human" vs "AI-generated" it sounds.
+
+Return a JSON object with EXACTLY these fields:
+{
+  "score": <integer 0-100, where 0=fully AI-generated, 100=fully human-written>,
+  "category": <"human" if score >= 80, "mixed" if score >= 50, "ai" if score < 50>,
+  "issues": ["list specific AI-like patterns found, e.g. 'Repetitive sentence structure', 'Overuse of transition phrases like In conclusion, Furthermore'"],
+  "suggestions": ["concrete improvement suggestions to make text sound more human and natural"]
+}
+
+TEXT TO ANALYZE:
+{$text}
+PROMPT;
+
+        try {
+            $response = Http::withToken($this->apiKey)
+                ->timeout(60)
+                ->post("{$this->baseUrl}/chat/completions", [
+                    'model' => $this->model,
+                    'messages' => [
+                        ['role' => 'system', 'content' => 'You are an expert at detecting AI-generated content. Analyze text and return JSON only, no other text.'],
+                        ['role' => 'user', 'content' => $prompt],
+                    ],
+                    'response_format' => ['type' => 'json_object'],
+                    'temperature' => 0.3,
+                    'max_tokens' => 600,
+                ]);
+
+            if ($response->failed()) {
+                return ['error' => 'API error: ' . $response->status()];
+            }
+
+            $raw = $response->json('choices.0.message.content');
+            $data = json_decode($raw, true);
+
+            if (! isset($data['score'], $data['category'])) {
+                return ['error' => 'Invalid response from AI.'];
+            }
+
+            $data['score'] = max(0, min(100, (int) $data['score']));
+
+            return $data;
+
+        } catch (\Exception $e) {
+            Log::error('checkHumanity error: ' . $e->getMessage());
+            return ['error' => $e->getMessage()];
         }
     }
 

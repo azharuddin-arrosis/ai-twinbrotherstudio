@@ -1,7 +1,7 @@
 import { useForm, Link } from '@inertiajs/react';
 import AdminLayout from '../../../Components/Layout/AdminLayout';
 import RichEditor from '../../../Components/UI/RichEditor';
-import { Save, Eye, ArrowLeft, ChevronDown } from 'lucide-react';
+import { Save, Eye, ArrowLeft, ChevronDown, Zap, X } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import useValidation from '../../../hooks/useValidation';
@@ -25,6 +25,13 @@ function Field({ label, error, children, hint }) {
 export default function ArticleForm({ article, categories, tags }) {
     const isEdit = !!article;
     const [seoOpen, setSeoOpen] = useState(false);
+    const [humanityChecking, setHumanityChecking] = useState(false);
+    const [humanityResult, setHumanityResult] = useState(
+        article?.humanity_score != null
+            ? { score: article.humanity_score, category: article.humanity_score >= 80 ? 'human' : article.humanity_score >= 50 ? 'mixed' : 'ai' }
+            : null
+    );
+    const [humanityOpen, setHumanityOpen] = useState(false);
 
     const { data, setData, post, put, processing, errors } = useForm({
         title: article?.title || '',
@@ -52,6 +59,27 @@ export default function ArticleForm({ article, categories, tags }) {
             put(`/admin/articles/${article.id}`, options);
         } else {
             post('/admin/articles', options);
+        }
+    };
+
+    const runHumanityCheck = async () => {
+        setHumanityChecking(true);
+        setHumanityOpen(true);
+        setHumanityResult(null);
+        try {
+            const res = await fetch(`/admin/articles/${article.id}/check-humanity`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                    'Accept': 'application/json',
+                },
+            });
+            const data = await res.json();
+            setHumanityResult(data);
+        } catch {
+            setHumanityResult({ error: 'Network error. Try again.' });
+        } finally {
+            setHumanityChecking(false);
         }
     };
 
@@ -84,6 +112,28 @@ export default function ArticleForm({ article, categories, tags }) {
                             >
                                 <Eye size={13} /> View
                             </a>
+                        )}
+                        {isEdit && (
+                            <button
+                                type="button"
+                                onClick={runHumanityCheck}
+                                disabled={humanityChecking}
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                            >
+                                <Zap size={13} className="text-amber-500" />
+                                {humanityChecking ? 'Checking...' : 'Check Humanity'}
+                                {humanityResult && !humanityResult.error && (
+                                    <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ml-0.5 ${
+                                        humanityResult.score >= 80
+                                            ? 'bg-green-100 text-green-700'
+                                            : humanityResult.score >= 50
+                                            ? 'bg-amber-100 text-amber-700'
+                                            : 'bg-red-100 text-red-600'
+                                    }`}>
+                                        {humanityResult.score}%
+                                    </span>
+                                )}
+                            </button>
                         )}
                         <button
                             type="submit"
@@ -284,6 +334,102 @@ export default function ArticleForm({ article, categories, tags }) {
                     </div>
                 </div>
             </form>
+
+            {humanityOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+                        <div className="flex items-center justify-between mb-5">
+                            <div className="flex items-center gap-2">
+                                <Zap size={16} className="text-amber-500" />
+                                <h3 className="font-semibold text-gray-900 text-sm">Humanity Score</h3>
+                            </div>
+                            <button type="button" onClick={() => setHumanityOpen(false)}
+                                className="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                                <X size={16} />
+                            </button>
+                        </div>
+
+                        {humanityChecking && (
+                            <div className="text-center py-8 text-sm text-gray-400">
+                                Analyzing article content...
+                            </div>
+                        )}
+
+                        {!humanityChecking && humanityResult && humanityResult.error && (
+                            <div className="text-sm text-red-500 bg-red-50 rounded-lg px-4 py-3">
+                                {humanityResult.error}
+                            </div>
+                        )}
+
+                        {!humanityChecking && humanityResult && !humanityResult.error && (
+                            <div className="space-y-4">
+                                {/* Score ring */}
+                                <div className="text-center py-4">
+                                    <div className={`text-5xl font-bold mb-1 ${
+                                        humanityResult.score >= 80
+                                            ? 'text-green-600'
+                                            : humanityResult.score >= 50
+                                            ? 'text-amber-500'
+                                            : 'text-red-500'
+                                    }`}>
+                                        {humanityResult.score}
+                                    </div>
+                                    <div className="text-xs text-gray-400 mb-2">out of 100</div>
+                                    <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                                        humanityResult.category === 'human'
+                                            ? 'bg-green-100 text-green-700'
+                                            : humanityResult.category === 'mixed'
+                                            ? 'bg-amber-100 text-amber-700'
+                                            : 'bg-red-100 text-red-600'
+                                    }`}>
+                                        {humanityResult.category === 'human' ? 'Sounds Human' : humanityResult.category === 'mixed' ? 'Mixed Signals' : 'AI-like Writing'}
+                                    </span>
+                                </div>
+
+                                {/* Score bar */}
+                                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                    <div
+                                        className={`h-full rounded-full transition-all ${
+                                            humanityResult.score >= 80 ? 'bg-green-500' : humanityResult.score >= 50 ? 'bg-amber-400' : 'bg-red-400'
+                                        }`}
+                                        style={{ width: `${humanityResult.score}%` }}
+                                    />
+                                </div>
+
+                                {/* Issues */}
+                                {humanityResult.issues?.length > 0 && (
+                                    <div>
+                                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Issues Found</h4>
+                                        <ul className="space-y-1.5">
+                                            {humanityResult.issues.map((issue, i) => (
+                                                <li key={i} className="text-xs text-gray-600 flex items-start gap-2">
+                                                    <span className="text-red-400 mt-0.5 flex-shrink-0">×</span>
+                                                    {issue}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {/* Suggestions */}
+                                {humanityResult.suggestions?.length > 0 && (
+                                    <div>
+                                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Suggestions</h4>
+                                        <ul className="space-y-1.5">
+                                            {humanityResult.suggestions.map((s, i) => (
+                                                <li key={i} className="text-xs text-gray-600 flex items-start gap-2">
+                                                    <span className="text-green-500 mt-0.5 flex-shrink-0">→</span>
+                                                    {s}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }

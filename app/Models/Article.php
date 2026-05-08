@@ -15,13 +15,14 @@ class Article extends Model
         'category_id', 'title', 'slug', 'excerpt', 'content',
         'featured_image', 'meta_title', 'meta_description',
         'status', 'source_type', 'source_url', 'source_name',
-        'reading_time', 'view_count', 'like_count', 'published_at',
+        'reading_time', 'view_count', 'like_count', 'humanity_score', 'published_at',
     ];
 
     protected $casts = [
         'published_at' => 'datetime',
         'view_count' => 'integer',
         'like_count' => 'integer',
+        'humanity_score' => 'integer',
         'reading_time' => 'integer',
     ];
 
