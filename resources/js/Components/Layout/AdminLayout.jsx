@@ -2,7 +2,7 @@ import { Link, router, usePage } from '@inertiajs/react';
 import {
     LayoutDashboard, FileText, Tag, FolderOpen, Rss,
     LogOut, Zap, ChevronRight, Menu, X,
-    Briefcase, Mail, Inbox
+    Briefcase, Mail, Inbox, MessageSquare
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Toaster, toast } from 'sonner';
@@ -16,12 +16,13 @@ const NAV = [
     { label: 'Portfolio', href: '/admin/portfolio', icon: Briefcase },
     { label: 'Contact Settings', href: '/admin/contact-settings', icon: Mail },
     { label: 'Submissions', href: '/admin/contact-submissions', icon: Inbox },
+    { label: 'Comments', href: '/admin/comments', icon: MessageSquare },
 ];
 
 export default function AdminLayout({ children, title }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const { url, props } = usePage();
-    const { flash = {} } = props;
+    const { flash = {}, pendingCommentsCount = 0 } = props;
 
     useEffect(() => {
         if (flash.success) toast.success(flash.success);
@@ -68,6 +69,11 @@ export default function AdminLayout({ children, title }) {
                         >
                             <Icon size={15} />
                             {label}
+                            {label === 'Comments' && pendingCommentsCount > 0 && (
+                                <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 leading-none">
+                                    {pendingCommentsCount}
+                                </span>
+                            )}
                         </Link>
                     ))}
                 </nav>

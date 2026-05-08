@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ArticleLikeController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Admin\CommentController as AdminCommentController;
 use App\Http\Controllers\Admin\ContactSettingController;
 use App\Http\Controllers\Admin\ContactSubmissionController;
 use App\Http\Controllers\Admin\PortfolioController as AdminPortfolioController;
@@ -46,6 +48,12 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('rss-sources', Admin\RssSourceController::class);
     Route::post('rss-sources/{rssSource}/fetch', [Admin\RssSourceController::class, 'fetchNow'])->name('rss-sources.fetch');
 
+        Route::get('comments', [AdminCommentController::class, 'index'])->name('comments.index');
+    Route::post('comments/{comment}/approve', [AdminCommentController::class, 'approve'])->name('comments.approve');
+    Route::post('comments/{comment}/reject', [AdminCommentController::class, 'reject'])->name('comments.reject');
+    Route::delete('comments/{comment}', [AdminCommentController::class, 'destroy'])->name('comments.destroy');
+    Route::post('comments/{comment}/reply', [AdminCommentController::class, 'reply'])->name('comments.reply');
+
     Route::get('contact-settings', [ContactSettingController::class, 'index'])->name('contact-settings.index');
     Route::post('contact-settings/bulk-update', [ContactSettingController::class, 'bulkUpdate'])->name('contact-settings.bulk-update');
 
@@ -60,6 +68,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 // Wildcard article route — didaftarkan SETELAH admin group agar tidak intercept /admin/*
 Route::get('/{category:slug}/{article:slug}', [ArticleController::class, 'show'])->name('article.show');
 Route::post('/{category:slug}/{article:slug}/like', [ArticleLikeController::class, 'store'])->name('article.like')->middleware('throttle:5,1');
+Route::post('/{category:slug}/{article:slug}/comments', [CommentController::class, 'store'])->name('article.comments.store')->middleware('throttle:3,60');
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'show'])->name('login');

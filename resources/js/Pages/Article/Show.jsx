@@ -1,9 +1,18 @@
-import { Link } from '@inertiajs/react';
+import { Link, useForm, usePage } from '@inertiajs/react';
 import PageMeta from '../../Components/UI/PageMeta';
 import PublicLayout from '../../Components/Layout/PublicLayout';
 import ArticleCard from '../../Components/UI/ArticleCard';
-import { Clock, ExternalLink, Share2, Copy, Check, Eye, Heart } from 'lucide-react';
+import { Clock, ExternalLink, Share2, Copy, Check, Eye, Heart, Send } from 'lucide-react';
 import { useState } from 'react';
+
+function formatRelativeTime(dateString) {
+    const diff = (Date.now() - new Date(dateString).getTime()) / 1000;
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    if (diff < 2592000) return `${Math.floor(diff / 86400)}d ago`;
+    return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -15,6 +24,97 @@ function formatCount(n) {
     if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
     if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
     return n.toString();
+}
+
+function CommentForm({ categorySlug, articleSlug }) {
+    const { flash = {} } = usePage().props;
+    const { data, setData, post, processing, errors, reset } = useForm({
+        name: '', email: '', body: '', website: '',
+    });
+
+    const submit = (e) => {
+        e.preventDefault();
+        post(`/${categorySlug}/${articleSlug}/comments`, {
+            onSuccess: () => reset('name', 'email', 'body'),
+        });
+    };
+
+    if (flash.success && flash.success.includes('moderation')) {
+        return (
+            <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm text-green-700">
+                {flash.success}
+            </div>
+        );
+    }
+
+    return (
+        <form onSubmit={submit} className="space-y-3">
+            {/* Honeypot — hidden dari user */}
+            <input type="text" name="website" value={data.website}
+                onChange={e => setData('website', e.target.value)}
+                style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <input type="text" placeholder="Your name *" value={data.name}
+                        onChange={e => setData('name', e.target.value)}
+                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 ${errors.name ? 'border-red-300' : 'border-gray-200'}`} />
+                    {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+                </div>
+                <div>
+                    <input type="email" placeholder="Your email * (not shown)" value={data.email}
+                        onChange={e => setData('email', e.target.value)}
+                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 ${errors.email ? 'border-red-300' : 'border-gray-200'}`} />
+                    {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+                </div>
+            </div>
+            <div>
+                <textarea placeholder="Write your comment... *" value={data.body}
+                    onChange={e => setData('body', e.target.value)} rows={4}
+                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-none ${errors.body ? 'border-red-300' : 'border-gray-200'}`} />
+                {errors.body && <p className="text-xs text-red-500 mt-1">{errors.body}</p>}
+            </div>
+            <button type="submit" disabled={processing}
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors">
+                <Send size={13} />
+                {processing ? 'Posting...' : 'Post Comment'}
+            </button>
+        </form>
+    );
+}
+
+function CommentItem({ comment }) {
+    return (
+        <div className="py-4 border-b border-gray-50 last:border-0">
+            <div className="flex items-center gap-2 mb-1.5">
+                <span className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-600 text-xs font-semibold flex items-center justify-center flex-shrink-0">
+                    {comment.name.charAt(0).toUpperCase()}
+                </span>
+                <span className="text-sm font-medium text-gray-900">{comment.name}</span>
+                <span className="text-xs text-gray-400">·</span>
+                <span className="text-xs text-gray-400">{formatRelativeTime(comment.created_at)}</span>
+            </div>
+            <p className="text-sm text-gray-700 leading-relaxed ml-9">{comment.body}</p>
+
+            {/* Replies */}
+            {comment.replies?.length > 0 && (
+                <div className="ml-9 mt-3 space-y-3 pl-4 border-l-2 border-indigo-100">
+                    {comment.replies.map(reply => (
+                        <div key={reply.id}>
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-semibold flex items-center justify-center flex-shrink-0">
+                                    T
+                                </span>
+                                <span className="text-xs font-semibold text-indigo-700">{reply.name}</span>
+                                <span className="text-xs text-gray-400">· {formatRelativeTime(reply.created_at)}</span>
+                            </div>
+                            <p className="text-sm text-gray-700 leading-relaxed ml-8">{reply.body}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
 }
 
 function LikeButton({ article, categorySlug }) {
@@ -218,6 +318,29 @@ export default function ArticleShow({ article, related }) {
                                 )}
                             </p>
                         )}
+
+                        {/* Comments */}
+                        <section className="mt-10 pt-8 border-t border-gray-100">
+                            <h2 className="text-base font-semibold text-gray-900 mb-6">
+                                {article.comments?.length > 0
+                                    ? `${article.comments.length} Comment${article.comments.length > 1 ? 's' : ''}`
+                                    : 'Comments'
+                                }
+                            </h2>
+
+                            {article.comments?.length > 0 && (
+                                <div className="mb-8 bg-white border border-gray-100 rounded-xl divide-y divide-gray-50 px-4">
+                                    {article.comments.map(comment => (
+                                        <CommentItem key={comment.id} comment={comment} />
+                                    ))}
+                                </div>
+                            )}
+
+                            <div className="bg-white border border-gray-100 rounded-xl p-5">
+                                <h3 className="text-sm font-semibold text-gray-700 mb-4">Leave a comment</h3>
+                                <CommentForm categorySlug={article.category.slug} articleSlug={article.slug} />
+                            </div>
+                        </section>
                     </article>
 
                     {/* Sidebar */}

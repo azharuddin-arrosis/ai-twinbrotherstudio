@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Category;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -27,6 +28,9 @@ class HandleInertiaRequests extends Middleware
             ],
             'categories' => fn () => Category::orderBy('sort_order')
                 ->get(['id', 'name', 'slug', 'color']),
+            'pendingCommentsCount' => fn () => $request->user()
+                ? Comment::pending()->count()
+                : 0,
         ]);
     }
 }

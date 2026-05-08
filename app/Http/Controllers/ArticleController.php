@@ -20,7 +20,14 @@ class ArticleController extends Controller
             ipHash: md5(request()->ip()),
         ));
 
-        $article->load(['category', 'tags']);
+        $article->load([
+            'category',
+            'tags',
+            'comments' => fn ($q) => $q->approved()
+                ->whereNull('parent_id')
+                ->with(['replies' => fn ($r) => $r->approved()->oldest()])
+                ->latest(),
+        ]);
 
         $related = Article::published()
             ->where('category_id', $article->category_id)
