@@ -53,7 +53,7 @@ class CommentController extends Controller
         Comment::create([
             'article_id' => $comment->article_id,
             'parent_id'  => $comment->id,
-            'name'       => 'Twin Brother Studio',
+            'name'       => 'Prompt',
             'email'      => config('mail.from.address'),
             'body'       => $request->body,
             'status'     => 'approved',

@@ -89,7 +89,7 @@ export default function HireUs({ contactSettings }) {
 
     return (
         <PublicLayout>
-            <PageMeta title="Hire Us — Twin Brother Studio" />
+            <PageMeta title="Hire Us — Prompt" />
 
             <div className="max-w-6xl mx-auto px-4 py-12">
 

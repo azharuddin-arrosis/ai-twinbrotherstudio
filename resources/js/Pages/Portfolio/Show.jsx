@@ -14,7 +14,7 @@ function TechChip({ label }) {
 export default function PortfolioShow({ item }) {
     return (
         <PublicLayout>
-            <PageMeta title={`${item.title} — Twin Brother Studio`} />
+            <PageMeta title={`${item.title} — Prompt`} />
 
             <div className="max-w-3xl mx-auto px-4 py-12">
 

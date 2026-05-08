@@ -53,7 +53,7 @@ export default function PublicLayout({ children, dark = false }) {
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-1.5 font-semibold text-gray-900 dark:text-white text-lg">
                             <Zap size={18} className="text-indigo-500" />
-                            <span>Twin Brother Studio</span>
+                            <span>Prompt</span>
                         </Link>
 
                         {/* Desktop Nav */}
@@ -149,7 +149,7 @@ export default function PublicLayout({ children, dark = false }) {
                         <div className="col-span-2 md:col-span-1">
                             <Link href="/" className="flex items-center gap-1.5 font-semibold text-gray-900 dark:text-white mb-3">
                                 <Zap size={16} className="text-indigo-500" />
-                                <span>Twin Brother Studio</span>
+                                <span>Prompt</span>
                             </Link>
                             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                                 Build. Educate. Grow. — AI tutorials, tools, and tips for everyday users.
@@ -212,7 +212,7 @@ export default function PublicLayout({ children, dark = false }) {
 
                     <div className="border-t border-gray-100 dark:border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
                         <p className="text-xs text-gray-400 dark:text-gray-500">
-                            © {new Date().getFullYear()} Twin Brother Studio. Content assisted by AI.
+                            © {new Date().getFullYear()} Prompt. Content assisted by AI.
                         </p>
                         <p className="text-xs text-gray-400 dark:text-gray-500">
                             Built with Laravel &amp; React

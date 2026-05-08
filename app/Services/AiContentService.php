@@ -127,7 +127,7 @@ PROMPT;
     private function systemPrompt(): string
     {
         return <<<PROMPT
-You are an expert AI content writer for AITutorials.com — a website helping everyday users learn how to use AI tools effectively.
+You are an expert AI content writer for prompt.twinbrotherstudio.com — a website helping everyday users learn how to use AI tools effectively.
 
 Your job is to take a news/article snippet and rewrite it as an original, valuable tutorial-style article in English.
 

@@ -24,7 +24,7 @@ export default function Login() {
                     <div className="text-center mb-8">
                         <div className="inline-flex items-center gap-1.5 font-bold text-xl text-gray-900">
                             <Zap size={20} className="text-indigo-500" />
-                            AITutorials
+                            Prompt
                         </div>
                         <p className="text-sm text-gray-500 mt-1">Admin panel</p>
                     </div>

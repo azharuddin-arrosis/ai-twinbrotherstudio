@@ -9,7 +9,7 @@ export default function TagShow({ tag, articles }) {
         <PublicLayout>
             <PageMeta
                 title={`#${tag.name}`}
-                description={`Browse all articles tagged with #${tag.name} on Twin Brother Studio.`}
+                description={`Browse all articles tagged with #${tag.name} on Prompt.`}
             />
 
             <div className="max-w-6xl mx-auto px-4 py-8">

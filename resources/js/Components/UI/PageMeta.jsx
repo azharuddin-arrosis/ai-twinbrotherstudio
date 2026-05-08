@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 
-const SITE_NAME = 'Twin Brother Studio';
-const DEFAULT_DESC = 'Twin Brother Studio — Web development, AI tutorials, and software solutions from Indonesia.';
+const SITE_NAME = 'Prompt';
+const DEFAULT_DESC = 'Prompt — AI tutorials, tools, and tips for everyday users.';
 
 export default function PageMeta({ title, description, image, noSuffix = false, type = 'website', url, publishedAt }) {
     const fullTitle = noSuffix ? title : (title ? `${title} — ${SITE_NAME}` : SITE_NAME);
@@ -31,8 +31,8 @@ export default function PageMeta({ title, description, image, noSuffix = false, 
                     "datePublished": publishedAt || '',
                     "publisher": {
                         "@type": "Organization",
-                        "name": "Twin Brother Studio",
-                        "url": "https://twinbrotherstudio.com"
+                        "name": "Prompt",
+                        "url": "https://prompt.twinbrotherstudio.com"
                     }
                 })}</script>
             )}

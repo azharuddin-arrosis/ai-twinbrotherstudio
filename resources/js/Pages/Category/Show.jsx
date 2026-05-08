@@ -9,7 +9,7 @@ export default function CategoryShow({ category, articles }) {
         <PublicLayout>
             <PageMeta
                 title={category.name}
-                description={category.description || `Browse all ${category.name} articles on AITutorials.`}
+                description={category.description || `Browse all ${category.name} articles on Prompt.`}
             />
 
             <div className="max-w-6xl mx-auto px-4 py-8">

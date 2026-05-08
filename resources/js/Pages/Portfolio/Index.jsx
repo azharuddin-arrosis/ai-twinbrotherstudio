@@ -81,7 +81,7 @@ function PortfolioCard({ item }) {
 export default function PortfolioIndex({ items }) {
     return (
         <PublicLayout>
-            <PageMeta title="Portfolio — Twin Brother Studio" />
+            <PageMeta title="Portfolio — Prompt" />
 
             <div className="max-w-6xl mx-auto px-4 py-12">
 
