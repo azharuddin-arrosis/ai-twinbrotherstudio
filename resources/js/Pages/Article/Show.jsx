@@ -198,7 +198,7 @@ export default function ArticleShow({ article, related }) {
     };
 
     return (
-        <PublicLayout>
+        <PublicLayout dark={isDark}>
             <PageMeta
                 title={article.meta_title || article.title}
                 description={article.meta_description}
@@ -208,8 +208,7 @@ export default function ArticleShow({ article, related }) {
                 publishedAt={article.published_at}
             />
 
-            <div className={`px-4 py-8 transition-colors ${isDark ? 'dark bg-slate-900 min-h-screen' : ''}`}>
-                <div className="max-w-6xl mx-auto">
+            <div className="max-w-6xl mx-auto px-4 py-8">
                     <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10">
 
                         {/* Article */}
@@ -384,7 +383,6 @@ export default function ArticleShow({ article, related }) {
                             )}
                         </aside>
                     </div>
-                </div>
             </div>
         </PublicLayout>
     );
