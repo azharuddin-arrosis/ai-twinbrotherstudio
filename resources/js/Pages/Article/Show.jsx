@@ -194,6 +194,9 @@ export default function ArticleShow({ article, related }) {
                 title={article.meta_title || article.title}
                 description={article.meta_description}
                 image={article.featured_image}
+                type="article"
+                url={`${window.location.origin}/${article.category.slug}/${article.slug}`}
+                publishedAt={article.published_at}
             />
 
             <div className="max-w-6xl mx-auto px-4 py-8">

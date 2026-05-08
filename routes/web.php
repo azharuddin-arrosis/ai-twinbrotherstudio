@@ -9,11 +9,15 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\SubscriberController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\CommentController as AdminCommentController;
 use App\Http\Controllers\Admin\ContactSettingController;
 use App\Http\Controllers\Admin\ContactSubmissionController;
 use App\Http\Controllers\Admin\PortfolioController as AdminPortfolioController;
+use App\Http\Controllers\Admin\SubscriberController as AdminSubscriberController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -27,11 +31,17 @@ Route::get('/robots.txt', function (): Response {
         200
     )->header('Content-Type', 'text/plain');
 });
+
 Route::get('/hire-us', [ContactController::class, 'show'])->name('hire-us');
 Route::post('/hire-us/submit', [ContactController::class, 'submit'])->name('hire-us.submit')->middleware('throttle:5,1');
 
 Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio.index');
 Route::get('/portfolio/{portfolioItem:slug}', [PortfolioController::class, 'show'])->name('portfolio.show');
+
+Route::get('/tag/{tag:slug}', [TagController::class, 'show'])->name('tag.show');
+
+Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe')->middleware('throttle:3,60');
+Route::get('/unsubscribe/{token}', [SubscriberController::class, 'unsubscribe'])->name('unsubscribe');
 
 Route::get('/category/{category:slug}', [CategoryController::class, 'show'])->name('category.show');
 
@@ -48,7 +58,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('rss-sources', Admin\RssSourceController::class);
     Route::post('rss-sources/{rssSource}/fetch', [Admin\RssSourceController::class, 'fetchNow'])->name('rss-sources.fetch');
 
-        Route::get('comments', [AdminCommentController::class, 'index'])->name('comments.index');
+    Route::get('comments', [AdminCommentController::class, 'index'])->name('comments.index');
     Route::post('comments/{comment}/approve', [AdminCommentController::class, 'approve'])->name('comments.approve');
     Route::post('comments/{comment}/reject', [AdminCommentController::class, 'reject'])->name('comments.reject');
     Route::delete('comments/{comment}', [AdminCommentController::class, 'destroy'])->name('comments.destroy');
@@ -63,6 +73,12 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('portfolio/reorder', [AdminPortfolioController::class, 'reorder'])->name('portfolio.reorder');
     Route::resource('portfolio', AdminPortfolioController::class);
     Route::post('portfolio/{portfolioItem}/toggle-publish', [AdminPortfolioController::class, 'togglePublish'])->name('portfolio.toggle-publish');
+
+    Route::get('subscribers', [AdminSubscriberController::class, 'index'])->name('subscribers.index');
+    Route::delete('subscribers/{subscriber}', [AdminSubscriberController::class, 'destroy'])->name('subscribers.destroy');
+    Route::get('subscribers/export', [AdminSubscriberController::class, 'export'])->name('subscribers.export');
+
+    Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 });
 
 // Wildcard article route — didaftarkan SETELAH admin group agar tidak intercept /admin/*

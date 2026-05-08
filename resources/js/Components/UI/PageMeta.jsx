@@ -1,9 +1,9 @@
 import { Helmet } from 'react-helmet-async';
 
-const SITE_NAME = 'AITutorials';
-const DEFAULT_DESC = 'Learn how to use AI tools effectively — tutorials, tips, and reviews for everyday users.';
+const SITE_NAME = 'Twin Brother Studio';
+const DEFAULT_DESC = 'Twin Brother Studio — Web development, AI tutorials, and software solutions from Indonesia.';
 
-export default function PageMeta({ title, description, image, noSuffix = false }) {
+export default function PageMeta({ title, description, image, noSuffix = false, type = 'website', url, publishedAt }) {
     const fullTitle = noSuffix ? title : (title ? `${title} — ${SITE_NAME}` : SITE_NAME);
     const desc = description || DEFAULT_DESC;
 
@@ -14,10 +14,28 @@ export default function PageMeta({ title, description, image, noSuffix = false }
             <meta property="og:title" content={fullTitle} />
             <meta property="og:description" content={desc} />
             <meta property="og:site_name" content={SITE_NAME} />
+            <meta property="og:type" content={type} />
+            {url && <meta property="og:url" content={url} />}
             {image && <meta property="og:image" content={image} />}
             <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={desc} />
+            <meta name="twitter:site" content="@twinbrotherstudio" />
+            {type === 'article' && (
+                <script type="application/ld+json">{JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "Article",
+                    "headline": fullTitle,
+                    "description": desc,
+                    "image": image || '',
+                    "datePublished": publishedAt || '',
+                    "publisher": {
+                        "@type": "Organization",
+                        "name": "Twin Brother Studio",
+                        "url": "https://twinbrotherstudio.com"
+                    }
+                })}</script>
+            )}
         </Helmet>
     );
 }

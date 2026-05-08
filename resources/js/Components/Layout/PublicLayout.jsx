@@ -1,6 +1,31 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, useForm } from '@inertiajs/react';
 import { Search, Zap, Menu, X } from 'lucide-react';
 import { useState } from 'react';
+
+function SubscribeForm() {
+    const { flash = {} } = usePage().props;
+    const { data, setData, post, processing, errors, reset } = useForm({ email: '', website: '' });
+
+    if (flash.success && flash.success.includes('subscribed')) {
+        return <p className="text-sm text-green-600">{flash.success}</p>;
+    }
+
+    return (
+        <form onSubmit={e => { e.preventDefault(); post('/subscribe', { onSuccess: () => reset() }); }}
+              className="flex gap-2 flex-wrap">
+            <input type="text" name="website" value={data.website}
+                onChange={e => setData('website', e.target.value)}
+                style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
+            <input type="email" value={data.email} onChange={e => setData('email', e.target.value)}
+                placeholder="your@email.com" required
+                className="flex-1 min-w-0 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300" />
+            <button type="submit" disabled={processing}
+                className="px-3 py-1.5 text-sm bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors whitespace-nowrap">
+                {processing ? '...' : 'Subscribe'}
+            </button>
+        </form>
+    );
+}
 
 export default function PublicLayout({ children, title, description }) {
     const { categories = [] } = usePage().props;
@@ -134,6 +159,12 @@ export default function PublicLayout({ children, title, description }) {
                             <Link href="/hire-us" className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors">Hire Us</Link>
                         </div>
                     </div>
+                    {/* Newsletter subscribe */}
+                    <div className="border-t border-gray-100 pt-6 mb-6">
+                        <p className="text-sm font-medium text-gray-700 mb-3">Get AI tutorials in your inbox</p>
+                        <SubscribeForm />
+                    </div>
+
                     <p className="text-center text-xs text-gray-400 mt-6">
                         © {new Date().getFullYear()} Twin Brother Studio. Content assisted by AI.
                     </p>

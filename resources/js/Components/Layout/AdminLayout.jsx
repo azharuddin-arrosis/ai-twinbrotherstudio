@@ -2,7 +2,7 @@ import { Link, router, usePage } from '@inertiajs/react';
 import {
     LayoutDashboard, FileText, Tag, FolderOpen, Rss,
     LogOut, Zap, ChevronRight, Menu, X,
-    Briefcase, Mail, Inbox, MessageSquare
+    Briefcase, Mail, Inbox, MessageSquare, Users, BarChart2
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Toaster, toast } from 'sonner';
@@ -17,6 +17,8 @@ const NAV = [
     { label: 'Contact Settings', href: '/admin/contact-settings', icon: Mail },
     { label: 'Submissions', href: '/admin/contact-submissions', icon: Inbox },
     { label: 'Comments', href: '/admin/comments', icon: MessageSquare },
+    { label: 'Subscribers', href: '/admin/subscribers', icon: Users },
+    { label: 'Analytics', href: '/admin/analytics', icon: BarChart2 },
 ];
 
 export default function AdminLayout({ children, title }) {
