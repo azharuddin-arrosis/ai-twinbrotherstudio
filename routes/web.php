@@ -70,7 +70,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('contact-settings/bulk-update', [ContactSettingController::class, 'bulkUpdate'])->name('contact-settings.bulk-update');
 
     Route::get('contact-submissions', [ContactSubmissionController::class, 'index'])->name('contact-submissions.index');
+    Route::get('contact-submissions/{submission}', [ContactSubmissionController::class, 'show'])->name('contact-submissions.show');
     Route::patch('contact-submissions/{submission}/mark-read', [ContactSubmissionController::class, 'markRead'])->name('contact-submissions.mark-read');
+    Route::delete('contact-submissions/{submission}', [ContactSubmissionController::class, 'destroy'])->name('contact-submissions.destroy');
 
     Route::post('portfolio/reorder', [AdminPortfolioController::class, 'reorder'])->name('portfolio.reorder');
     Route::resource('portfolio', AdminPortfolioController::class);

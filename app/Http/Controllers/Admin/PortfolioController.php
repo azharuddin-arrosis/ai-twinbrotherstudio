@@ -8,7 +8,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -47,13 +46,12 @@ class PortfolioController extends Controller
             $data['image_path'] = $request->file('image')->store('portfolio', 'public');
         }
 
-        $data['slug'] = Str::slug($data['title']);
-
         unset($data['image']);
 
         PortfolioItem::create($data);
 
-        return redirect()->route('admin.portfolio.index')->with('success', 'Portfolio item created.');
+        return redirect()->route('admin.portfolio.index')
+            ->with('success', 'Portfolio item created.');
     }
 
     public function edit(PortfolioItem $portfolioItem): Response
@@ -89,7 +87,8 @@ class PortfolioController extends Controller
 
         $portfolioItem->update($data);
 
-        return redirect()->route('admin.portfolio.index')->with('success', 'Portfolio item updated.');
+        return redirect()->route('admin.portfolio.index')
+            ->with('success', 'Portfolio item updated.');
     }
 
     public function destroy(PortfolioItem $portfolioItem): RedirectResponse
@@ -100,14 +99,15 @@ class PortfolioController extends Controller
 
         $portfolioItem->delete();
 
-        return redirect()->route('admin.portfolio.index')->with('success', 'Portfolio item deleted.');
+        return redirect()->route('admin.portfolio.index')
+            ->with('success', 'Portfolio item deleted.');
     }
 
     public function togglePublish(PortfolioItem $portfolioItem): RedirectResponse
     {
         $portfolioItem->update(['is_published' => ! $portfolioItem->is_published]);
 
-        return back();
+        return back()->with('success', $portfolioItem->is_published ? 'Item published.' : 'Item unpublished.');
     }
 
     public function reorder(Request $request): JsonResponse

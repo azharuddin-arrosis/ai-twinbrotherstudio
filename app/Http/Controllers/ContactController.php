@@ -35,10 +35,12 @@ class ContactController extends Controller
 
         $submission = ContactSubmission::create($data);
 
-        Mail::to(
-            ContactSetting::get('admin_email', config('mail.from.address'))
-        )->queue(new ContactSubmissionMail($submission));
+        $adminEmail = ContactSetting::get('admin_email', config('mail.from.address'));
 
-        return back()->with('success', 'Your message has been sent! We\'ll get back to you within 1–2 business days.');
+        if ($adminEmail) {
+            Mail::to($adminEmail)->queue(new ContactSubmissionMail($submission));
+        }
+
+        return back()->with('success', "Thanks {$submission->name}! We'll get back to you within 1–2 business days.");
     }
 }
