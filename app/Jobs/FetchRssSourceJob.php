@@ -17,13 +17,6 @@ class FetchRssSourceJob implements ShouldQueue
     public int $tries = 3;
     public int $timeout = 60;
 
-    private const AI_KEYWORDS = [
-        'ai', 'artificial intelligence', 'chatgpt', 'gpt', 'claude', 'gemini',
-        'llm', 'machine learning', 'deep learning', 'neural network', 'openai',
-        'anthropic', 'google ai', 'microsoft ai', 'copilot', 'midjourney',
-        'stable diffusion', 'dall-e', 'prompt', 'generative ai', 'large language',
-    ];
-
     public function __construct(public readonly RssSource $source) {}
 
     public function handle(): void
@@ -37,7 +30,7 @@ class FetchRssSourceJob implements ShouldQueue
             $dispatched = 0;
 
             foreach ($items as $item) {
-                if (! $this->isRelevant($item)) {
+                if (! $this->isRelevant($item, $this->source->category?->keywords)) {
                     continue;
                 }
 
@@ -102,12 +95,16 @@ class FetchRssSourceJob implements ShouldQueue
         return $items;
     }
 
-    private function isRelevant(array $item): bool
+    private function isRelevant(array $item, ?array $keywords): bool
     {
+        if (empty($keywords)) {
+            return true;
+        }
+
         $text = strtolower($item['title'] . ' ' . $item['description']);
 
-        foreach (self::AI_KEYWORDS as $keyword) {
-            if (str_contains($text, $keyword)) {
+        foreach ($keywords as $keyword) {
+            if (str_contains($text, strtolower($keyword))) {
                 return true;
             }
         }

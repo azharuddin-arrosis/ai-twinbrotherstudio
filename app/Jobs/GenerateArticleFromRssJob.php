@@ -2,9 +2,11 @@
 
 namespace App\Jobs;
 
+use App\Jobs\HumanizeArticleJob;
 use App\Models\Article;
 use App\Models\RssSource;
 use App\Services\AiContentService;
+use App\Services\ArticleLogger;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
@@ -39,7 +41,7 @@ class GenerateArticleFromRssJob implements ShouldQueue
                 $slug = $baseSlug . '-' . $i++;
             }
 
-            Article::create([
+            $article = Article::create([
                 'category_id' => $this->source->category_id ?? $generated['category_id'],
                 'title' => $generated['title'],
                 'slug' => $slug,
@@ -54,6 +56,13 @@ class GenerateArticleFromRssJob implements ShouldQueue
             ]);
 
             Log::info("Article generated: {$generated['title']}");
+
+            ArticleLogger::log($article, 'GENERATED', [
+                'source' => $this->rssItem['source_name'],
+                'url'    => $this->rssItem['link'],
+            ]);
+
+            HumanizeArticleJob::dispatch($article->id)->delay(now()->addSeconds(3));
 
         } catch (\Exception $e) {
             Log::error("Article generation failed: {$e->getMessage()} — {$this->rssItem['link']}");

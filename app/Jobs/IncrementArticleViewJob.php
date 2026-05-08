@@ -20,13 +20,16 @@ class IncrementArticleViewJob implements ShouldQueue
 
     public function handle(): void
     {
+        if (! Article::where('id', $this->articleId)->exists()) {
+            return;
+        }
+
         $cacheKey = "view_{$this->articleId}_{$this->ipHash}";
 
         if (Cache::has($cacheKey)) {
             return;
         }
 
-        // Increment total view count
         Article::where('id', $this->articleId)->increment('view_count');
 
         // Upsert daily analytics

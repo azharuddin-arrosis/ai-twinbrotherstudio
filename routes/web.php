@@ -53,6 +53,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('articles/{article}/publish', [Admin\ArticleController::class, 'publish'])->name('articles.publish');
     Route::post('articles/{article}/reject', [Admin\ArticleController::class, 'reject'])->name('articles.reject');
     Route::post('articles/{article}/check-humanity', [Admin\ArticleController::class, 'checkHumanity'])->name('articles.check-humanity');
+    Route::get('articles/{article}/log', [Admin\ArticleController::class, 'log'])->name('articles.log');
 
     Route::resource('categories', Admin\CategoryController::class);
     Route::resource('tags', Admin\TagController::class);

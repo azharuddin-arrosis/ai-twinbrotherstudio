@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Services\AiContentService;
+use App\Services\ArticleLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -30,6 +31,17 @@ class ArticleController extends Controller
             'articles' => $articles,
             'categories' => Category::orderBy('name')->get(['id', 'name']),
             'filters' => $request->only(['status', 'category', 'search']),
+        ]);
+    }
+
+    public function log(Article $article): JsonResponse
+    {
+        $article->load('category');
+        $lines = ArticleLogger::read($article);
+
+        return response()->json([
+            'article' => $article->only(['id', 'title', 'humanity_score', 'humanity_attempts', 'status']),
+            'lines'   => $lines,
         ]);
     }
 

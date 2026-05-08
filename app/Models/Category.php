@@ -8,7 +8,9 @@ use Illuminate\Support\Str;
 
 class Category extends Model
 {
-    protected $fillable = ['name', 'slug', 'description', 'color', 'sort_order'];
+    protected $fillable = ['name', 'slug', 'description', 'color', 'sort_order', 'keywords'];
+
+    protected $casts = ['keywords' => 'array'];
 
     protected static function booted(): void
     {
