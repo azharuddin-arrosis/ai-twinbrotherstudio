@@ -68,6 +68,11 @@ class ArticleController extends Controller
         return redirect()->route('admin.articles.index')->with('success', 'Article created.');
     }
 
+    public function show(Article $article): RedirectResponse
+    {
+        return redirect()->route('admin.articles.edit', $article);
+    }
+
     public function edit(Article $article): Response
     {
         $article->load('tags');

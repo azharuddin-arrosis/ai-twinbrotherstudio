@@ -30,6 +30,7 @@ class ArticleController extends Controller
         ]);
 
         $related = Article::published()
+            ->with('category:id,name,slug,color')
             ->where('category_id', $article->category_id)
             ->where('id', '!=', $article->id)
             ->latest('published_at')

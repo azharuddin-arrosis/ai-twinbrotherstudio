@@ -278,9 +278,10 @@ export default function ArticleShow({ article, related }) {
                         {article.tags?.length > 0 && (
                             <div className="mt-8 pt-6 border-t border-gray-100 flex flex-wrap gap-2">
                                 {article.tags.map((tag) => (
-                                    <span key={tag.id} className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">
+                                    <Link key={tag.id} href={`/tag/${tag.slug}`}
+                                        className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
                                         #{tag.name}
-                                    </span>
+                                    </Link>
                                 ))}
                             </div>
                         )}
