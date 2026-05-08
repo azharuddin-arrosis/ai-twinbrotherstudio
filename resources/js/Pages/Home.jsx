@@ -51,12 +51,12 @@ function CategorySection({ category, articles, idx }) {
         );
     }
 
-    /* Variant 2 — 2-column wide, 2 rows, excerpts visible */
+    /* Variant 2 — 3-column, 1 row */
     return (
         <section className="mb-12">
             {header}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {articles.slice(0, 4).map(article => (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {articles.slice(0, 3).map(article => (
                     <ArticleCard key={article.id} article={article} />
                 ))}
             </div>

@@ -142,30 +142,82 @@ export default function PublicLayout({ children, dark = false }) {
 
             {/* Footer */}
             <footer className="border-t border-gray-100 dark:border-slate-800 mt-16">
-                <div className="max-w-6xl mx-auto px-4 py-8">
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400">
-                        <div className="flex items-center gap-1.5">
-                            <Zap size={14} className="text-indigo-500" />
-                            <span className="font-medium text-gray-700 dark:text-white">Twin Brother Studio</span>
-                            <span className="hidden sm:inline">— Build. Educate. Grow.</span>
+                <div className="max-w-6xl mx-auto px-4 py-12">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+
+                        {/* Col 1 — Brand */}
+                        <div className="col-span-2 md:col-span-1">
+                            <Link href="/" className="flex items-center gap-1.5 font-semibold text-gray-900 dark:text-white mb-3">
+                                <Zap size={16} className="text-indigo-500" />
+                                <span>Twin Brother Studio</span>
+                            </Link>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                                Build. Educate. Grow. — AI tutorials, tools, and tips for everyday users.
+                            </p>
                         </div>
-                        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
-                            {navLinks.map((link) => (
-                                <Link key={link.href} href={link.href} className="hover:text-gray-900 dark:hover:text-white transition-colors">
-                                    {link.label}
-                                </Link>
-                            ))}
-                            <Link href="/portfolio" className="hover:text-gray-900 dark:hover:text-white transition-colors">Portfolio</Link>
-                            <Link href="/hire-us" className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium transition-colors">Hire Us</Link>
+
+                        {/* Col 2 — Categories */}
+                        <div>
+                            <h4 className="text-xs font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Topics</h4>
+                            <ul className="space-y-2.5">
+                                {navLinks.map(link => (
+                                    <li key={link.href}>
+                                        <Link href={link.href} className="text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                            {link.label}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Col 3 — Company */}
+                        <div>
+                            <h4 className="text-xs font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Company</h4>
+                            <ul className="space-y-2.5">
+                                <li>
+                                    <Link href="/portfolio" className="text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                        Portfolio
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/hire-us" className="text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                        Hire Us
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/hire-us" className="text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                        Privacy Policy
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/hire-us" className="text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                        Terms of Use
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/hire-us" className="text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                        Contact
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Col 4 — Newsletter */}
+                        <div>
+                            <h4 className="text-xs font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Newsletter</h4>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Weekly AI tutorials in your inbox.</p>
+                            <SubscribeForm />
                         </div>
                     </div>
-                    <div className="border-t border-gray-100 dark:border-slate-800 pt-6 mb-6 mt-6">
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Get AI tutorials in your inbox</p>
-                        <SubscribeForm />
+
+                    <div className="border-t border-gray-100 dark:border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
+                            © {new Date().getFullYear()} Twin Brother Studio. Content assisted by AI.
+                        </p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
+                            Built with Laravel &amp; React
+                        </p>
                     </div>
-                    <p className="text-center text-xs text-gray-400 dark:text-gray-500">
-                        © {new Date().getFullYear()} Twin Brother Studio. Content assisted by AI.
-                    </p>
                 </div>
             </footer>
         </div>
